@@ -1,0 +1,37 @@
+version: "3"
+
+services:
+  app:
+    container_name: laravel_app
+    build: .
+    restart: always
+    ports:
+      - ${APP_PORT}:80
+    volumes:
+      - ./laravel:/var/www/html/laravel
+      - ./docker/apache/000-default.conf:/etc/apache2/sites-enabled/000-default.conf
+      - ./docker/php/php.ini:/usr/local/etc/php/php.ini
+    networks:
+      - laravel_network
+  db:
+    image: mysql:5.7
+    container_name: laravel_mysql
+    restart: always
+    ports:
+      - ${DB_PORT}:3306
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_USER: ${DB_USER}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+    volumes:
+      - ./docker/db/mysql/data:/var/lib/mysql
+    networks:
+      - laravel_network
+
+volumes:
+  laravel_data:
+
+networks:
+  laravel_network:
+    driver: bridge
